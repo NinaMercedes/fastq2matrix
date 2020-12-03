@@ -25,7 +25,7 @@ def main(args):
         samples = [x.replace(args.extension,"") for x in os.listdir("%s/" % args.dir) if x[- len(args.extension):]==args.extension]
     for s in tqdm(samples):
         res = []
-        for i,l in enumerate(open("%s/%s%s" % (args.dir,s,args.extension)):
+        for i,l in enumerate(open("%s/%s%s" % (args.dir,s,args.extension))):
             row = l.rstrip().split()
             if i==4:
                 res.append(str(row[0]))
