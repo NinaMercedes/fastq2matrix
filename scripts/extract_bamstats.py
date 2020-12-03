@@ -24,7 +24,8 @@ def main(args):
     if args.sample_file:
         samples = [x.rstrip() for x in open(args.sample_file).readlines()]
     else:
-        samples = [x.replace(args.flagstat_extension,"") for x in os.listdir("%s/" % args.dir) if x[- len(args.flagstat_extension):]==args.flagstat_extension]
+        samples = [x.replace(args.bam_extension,"") for x in os.listdir("%s/" % args.dir) if x[- len(args.bam_extension):]==args.bam_extension]
+
     for s in tqdm(samples):
         res = []
         for i,l in enumerate(open("%s/%s%s" % (args.dir,s,args.flagstat_extension))):
@@ -63,7 +64,7 @@ def main(args):
 parser = argparse.ArgumentParser(description='TBProfiler pipeline',formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 parser.add_argument('--sample-file',type=str,help='Sample file')
 parser.add_argument('--dir',default=".",type=str,help='Directory')
-parser.add_argument('--depth-cutoff',action="store_true",help='Add depth info')
+parser.add_argument('--depth-cutoff',default=10,type=int,help='Add depth info')
 parser.add_argument('--bam-extension',default=".bqsr.cram",type=str,help='Extension of bam files')
 parser.set_defaults(func=main)
 
