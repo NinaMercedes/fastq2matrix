@@ -22,10 +22,10 @@ def main(args):
     if args.sample_file:
         samples = [x.rstrip() for x in open(args.sample_file).readlines()]
     else:
-        samples = [x.replace(".bqsr.bamstats","") for x in os.listdir("%s/" % args.dir) if x[-14:]==".bqsr.bamstats"]
+        samples = [x.replace(args.extension,"") for x in os.listdir("%s/" % args.dir) if x[-14:]==args.extension]
     for s in tqdm(samples):
         res = []
-        for i,l in enumerate(open(f"{args.dir}/{s}.bqsr.bamstats")):
+        for i,l in enumerate(open(f"{args.dir}/{s}{args.extension}")):
             row = l.rstrip().split()
             if i==4:
                 res.append(str(row[0]))
@@ -38,6 +38,7 @@ parser = argparse.ArgumentParser(description='TBProfiler pipeline',formatter_cla
 parser.add_argument('--sample-file',type=str,help='Sample file')
 parser.add_argument('--dir',default=".",type=str,help='Directory')
 parser.add_argument('--depth',action="store_true",help='Add depth info')
+parser.add_argument('--extension',default=".bqsr.bamstats",type=str,help='Extension of bam files')
 parser.set_defaults(func=main)
 
 args = parser.parse_args()
