@@ -22,7 +22,7 @@ def main(args):
     if args.sample_file:
         samples = [x.rstrip() for x in open(args.sample_file).readlines()]
     else:
-        samples = [x.replace(args.extension,"") for x in os.listdir("%s/" % args.dir) if x[-14:]==args.extension]
+        samples = [x.replace(args.extension,"") for x in os.listdir("%s/" % args.dir) if x[- len(args.extension):]==args.extension]
     for s in tqdm(samples):
         res = []
         for i,l in enumerate(open(f"{args.dir}/{s}{args.extension}")):
