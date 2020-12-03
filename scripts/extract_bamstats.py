@@ -25,13 +25,13 @@ def main(args):
         samples = [x.replace(args.extension,"") for x in os.listdir("%s/" % args.dir) if x[- len(args.extension):]==args.extension]
     for s in tqdm(samples):
         res = []
-        for i,l in enumerate(open(f"{args.dir}/{s}{args.extension}")):
+        for i,l in enumerate(open("%s/%s%s" % (args.dir,s,args.extension)):
             row = l.rstrip().split()
             if i==4:
                 res.append(str(row[0]))
                 res.append(str(row[4][1:-1]))
         if args.depth:
-            res.append(open(f"{args.dir}/{s}.median_depth").readline().strip())
+            res.append(open("%s/%s.median_depth" % (args.dir,s)).readline().strip())
         print("%s\t%s" % (s,"\t".join(res)))
 
 parser = argparse.ArgumentParser(description='TBProfiler pipeline',formatter_class=argparse.ArgumentDefaultsHelpFormatter)
