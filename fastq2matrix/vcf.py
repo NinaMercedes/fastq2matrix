@@ -91,7 +91,7 @@ class vcf_class:
                 else:
                     s = self.samples[i-1]
                     O.write("%s\t%s" % ( s,l))
-        # run_cmd("rm %s" % self.tmp_file)
+        run_cmd("rm %s" % self.tmp_file)
         return self.prefix+".snps.fa"
 
 
