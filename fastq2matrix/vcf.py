@@ -69,6 +69,32 @@ class vcf_class:
         O = open(self.binary_matrix_file,"w").write("chr\tpos\tref\t%s\n" % ("\t".join(self.samples)))
         run_cmd("bcftools query -f '%%CHROM\\t%%POS\\t%%REF[\\t%%GT]\\n' %(filename)s | tr '|' '/' | sed 's/\.\/\./%(na)s/g' | sed 's/0\/1/0.5/g' | sed 's/[123456789]\/[123456789]/1/g' | sed 's/0\/0/0/g' >> %(binary_matrix_file)s" % vars(self))
 
+    def vcf_to_transposed_matrix(self,ref_file,threads=4,chunk_size = 50000,iupacgt=True,na="N"):
+        self.binary_matrix_file = self.prefix+".tmat.bin"
+        self.window = chunk_size-1
+        self.step = chunk_size
+        self.na = na
+        self.ref_file = ref_file
+        self.cmd_split_chr = "bedtools makewindows -g %(ref_file)s.fai -w %(window)s -s %(step)s | awk '{print $1\":\"$2\"-\"$3}'" % vars(self)
+        self.tmp_file = "%s.tmp.txt" % self.prefix
+        self.threads = threads
+        cmd = "%(cmd_split_chr)s | parallel -j %(threads)s \"bcftools view  %(filename)s -r {} | bcftools view -V indels | bcftools query -f '%%POS[\\t%%GT]\\n' | tr '|' '/' | sed 's/\.\/\./%(na)s/g' | sed 's/0\/1/0.5/g' | sed 's/[123456789]\/[123456789]/1/g' | sed 's/0\/0/0/g' |  datamash transpose > %(prefix)s.{}.tmp.txt\"" % vars(self)
+        run_cmd(cmd)
+        cmd = "paste `%(cmd_split_chr)s | awk '{print \"%(prefix)s.\"$1\".tmp.txt\"}'` > %(tmp_file)s" % vars(self)
+        run_cmd(cmd)
+        cmd = "rm `%(cmd_split_chr)s | awk '{print \"%(prefix)s.\"$1\".tmp.txt\"}'`" % vars(self)
+        run_cmd(cmd)
+        with open(self.binary_matrix_file,"w") as O:
+            for i,l in enumerate(open(self.tmp_file)):
+                if i==0:
+                    O.write("run_accession\t"+l)
+                else:
+                    s = self.samples[i-1]
+                    O.write("%s\t%s" % ( s,l))
+        # run_cmd("rm %s" % self.tmp_file)
+        return self.prefix+".snps.fa"
+
+
     def get_plink_dist(self,pca=True,mds=True):
         self.tempfile = get_random_file(extension=".vcf")
         run_cmd("bcftools view %(filename)s > %(tempfile)s" % vars(self))
