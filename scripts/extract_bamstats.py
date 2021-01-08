@@ -59,8 +59,8 @@ def main(args):
             tmp_positions = num_positions
         res.append(str(median_dp))
         res.append(str(cumfrac))
-        with open(args.out,"w") as O:
-            O.write("%s\t%s\n" % (s,"\t".join(res)))
+    with open(args.out,"w") as O:
+        O.write("%s\t%s\n" % (s,"\t".join(res)))
 
 parser = argparse.ArgumentParser(description='TBProfiler pipeline',formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 parser.add_argument('--out',type=str,help='Sample file',required=True)
