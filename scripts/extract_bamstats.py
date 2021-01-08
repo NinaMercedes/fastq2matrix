@@ -62,7 +62,7 @@ def main(args):
         print("%s\t%s" % (s,"\t".join(res)))
 
 parser = argparse.ArgumentParser(description='TBProfiler pipeline',formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-parser.add_argument('--samples',type=str,help='Sample file')
+parser.add_argument('--sample-file',type=str,help='Sample file')
 parser.add_argument('--dir',default=".",type=str,help='Directory')
 parser.add_argument('--depth-cutoff',default=10,type=int,help='Add depth info')
 parser.add_argument('--bam-extension',default=".bqsr.cram",type=str,help='Extension of bam files')
