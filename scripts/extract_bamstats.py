@@ -27,7 +27,6 @@ def main(args):
         samples = [x.replace(args.bam_extension,"") for x in os.listdir("%s/" % args.dir) if x[- len(args.bam_extension):]==args.bam_extension]
     with open(args.out,"w") as O:
         for s in tqdm(samples):
-            print(s)
             res = []
             for i,l in enumerate(open("%s/%s%s" % (args.dir,s,args.flagstat_extension))):
                 row = l.rstrip().split()
