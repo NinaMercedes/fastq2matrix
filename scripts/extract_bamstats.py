@@ -38,7 +38,7 @@ def main(args):
         cutoff=10
         cumfrac = 0.0
         tmp_positions = 0
-        for l in tqdm(open("%s/%s%s" % (args.dir,s,args.coverage_extension))):
+        for l in open("%s/%s%s" % (args.dir,s,args.coverage_extension)):
             row = l.strip().split()
             chr = row[0]
             if row[0]!="genome": continue
