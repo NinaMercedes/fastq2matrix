@@ -20,7 +20,7 @@ from tqdm import tqdm
 
 def main(args):
     args.flagstat_extension = args.bam_extension+".flagstat"
-    args.coverage_extension = args.bam_extension+".bqsr.cram.genomecov.txt"
+    args.coverage_extension = args.bam_extension+".genomecov.txt"
     if args.sample_file:
         samples = [x.rstrip() for x in open(args.sample_file).readlines()]
     else:
