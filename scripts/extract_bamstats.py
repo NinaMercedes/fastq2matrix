@@ -38,7 +38,7 @@ def main(args):
         cutoff=10
         cumfrac = 0.0
         tmp_positions = 0
-        for l in open("%s/%s%s" % (args.dir,s,args.coverage_extension)):
+        for l in tqdm(open("%s/%s%s" % (args.dir,s,args.coverage_extension))):
             row = l.strip().split()
             chr = row[0]
             if row[0]!="genome": continue
@@ -59,9 +59,11 @@ def main(args):
             tmp_positions = num_positions
         res.append(str(median_dp))
         res.append(str(cumfrac))
-        print("%s\t%s" % (s,"\t".join(res)))
+        with open(args.out,"w") as O:
+            O.write("%s\t%s\n" % (s,"\t".join(res)))
 
 parser = argparse.ArgumentParser(description='TBProfiler pipeline',formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+parser.add_argument('--out',type=str,help='Sample file',required=True)
 parser.add_argument('--sample-file',type=str,help='Sample file')
 parser.add_argument('--dir',default=".",type=str,help='Directory')
 parser.add_argument('--depth-cutoff',default=10,type=int,help='Add depth info')
