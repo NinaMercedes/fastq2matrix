@@ -25,43 +25,42 @@ def main(args):
         samples = [x.rstrip() for x in open(args.sample_file).readlines()]
     else:
         samples = [x.replace(args.bam_extension,"") for x in os.listdir("%s/" % args.dir) if x[- len(args.bam_extension):]==args.bam_extension]
-
-    for s in tqdm(samples):
-        print(s)
-        res = []
-        for i,l in enumerate(open("%s/%s%s" % (args.dir,s,args.flagstat_extension))):
-            row = l.rstrip().split()
-            if i==4:
-                res.append(str(row[0]))
-                res.append(str(row[4][1:-1]))
-
-
-        cutoff=10
-        cumfrac = 0.0
-        tmp_positions = 0
-        for l in open("%s/%s%s" % (args.dir,s,args.coverage_extension)):
-            row = l.strip().split()
-            chr = row[0]
-            if row[0]!="genome": continue
-            dp = int(row[1])
-            freq = int(row[2])
-            seqsize = int(row[3])
-            fraction = float(row[4])
-            if dp<args.depth_cutoff:
-                cumfrac+=fraction
-            if dp==0:
-                genome_size = seqsize
-            num_positions = tmp_positions+freq
-            if num_positions>(genome_size)/2 and tmp_positions<=(genome_size)/2:
-                if genome_size%2==0 and genome_size//2==tmp_positions:
-                    median_dp = dp-0.5
-                else:
-                    median_dp = dp
-            tmp_positions = num_positions
-        res.append(str(median_dp))
-        res.append(str(cumfrac))
     with open(args.out,"w") as O:
-        O.write("%s\t%s\n" % (s,"\t".join(res)))
+        for s in tqdm(samples):
+            print(s)
+            res = []
+            for i,l in enumerate(open("%s/%s%s" % (args.dir,s,args.flagstat_extension))):
+                row = l.rstrip().split()
+                if i==4:
+                    res.append(str(row[0]))
+                    res.append(str(row[4][1:-1]))
+
+
+            cutoff=10
+            cumfrac = 0.0
+            tmp_positions = 0
+            for l in open("%s/%s%s" % (args.dir,s,args.coverage_extension)):
+                row = l.strip().split()
+                chr = row[0]
+                if row[0]!="genome": continue
+                dp = int(row[1])
+                freq = int(row[2])
+                seqsize = int(row[3])
+                fraction = float(row[4])
+                if dp<args.depth_cutoff:
+                    cumfrac+=fraction
+                if dp==0:
+                    genome_size = seqsize
+                num_positions = tmp_positions+freq
+                if num_positions>(genome_size)/2 and tmp_positions<=(genome_size)/2:
+                    if genome_size%2==0 and genome_size//2==tmp_positions:
+                        median_dp = dp-0.5
+                    else:
+                        median_dp = dp
+                tmp_positions = num_positions
+            res.append(str(median_dp))
+            res.append(str(cumfrac))
+            O.write("%s\t%s\n" % (s,"\t".join(res)))
 
 parser = argparse.ArgumentParser(description='TBProfiler pipeline',formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 parser.add_argument('--out',type=str,help='Sample file',required=True)
