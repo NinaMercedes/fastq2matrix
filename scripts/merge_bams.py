@@ -38,15 +38,17 @@ def main(args):
     if args.format=="cram":
         if not args.ref:
             quit("\nOutput in cram format requires referene with --ref\n")
-        cram_arg = "samtools view -T %s -O CRAM | " % args.ref
+        cram_arg = "| samtools view -CT %s " % args.ref
     else:
         cram_arg = ""
     # fm.run_cmd("samtools merge %s -@ %s - %s | samtools reheader -i %s - | samtools addreplacerg -@ %s - -r 'ID:%s\\tSM:%s\\tPL:Illumina' -o %s" % (
-    fm.run_cmd("samtools merge -@ %s - %s | %s samtools addreplacerg -@ %s - -r 'ID:%s\\tSM:%s\\tPL:Illumina' -o %s " % (
-        args.threads," ".join(individual_bams), cram_arg,args.threads,new_id,new_id,new_bamfile)
+    tmp_bam = str(uuid4())
+    fm.run_cmd("samtools merge -@ %s - %s | samtools addreplacerg -@ %s - -r 'ID:%s\\tSM:%s\\tPL:Illumina' -O BAM | samtools reheader %s - %s > %s" % (
+        args.threads," ".join(individual_bams), args.threads,new_id,new_id,tmp_file,cram_arg,new_bamfile)
     )
+    # fm.run_cmd("samtools reheader %s %s %s  >  %s" % (tmp_file, tmp_bam, cram_arg,new_bamfile))
     fm.run_cmd("samtools index %s" % new_bamfile)
-    fm.rm_files([tmp_file])
+    # fm.rm_files([tmp_file])
 
 parser = argparse.ArgumentParser(description='TBProfiler pipeline',formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 parser.add_argument('--bams',help='Comma seperated BAM file list')
@@ -60,3 +62,4 @@ parser.add_argument('--threads',default=4, type=int, help='Number of threads for
 parser.set_defaults(func=main)
 args = parser.parse_args()
 args.func(args)
+#
