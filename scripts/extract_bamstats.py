@@ -19,7 +19,7 @@ from tqdm import tqdm
 #0 + 0 with mate mapped to a different chr (mapQ>=5)
 
 def main(args):
-    args.flagstat_extension = args.bam_extension+".flagstat"
+    args.flagstat_extension = args.bam_extension+".flagstat.txt"
     args.coverage_extension = args.bam_extension+".genomecov.txt"
     if args.sample_file:
         samples = [x.rstrip() for x in open(args.sample_file).readlines()]
@@ -28,6 +28,10 @@ def main(args):
     with open(args.out,"w") as O:
         for s in tqdm(samples):
             res = []
+            if args.allow_missing and (not os.path.isfile("%s/%s%s" % (args.dir,s,args.coverage_extension)) or not os.path.isfile("%s/%s%s" % (args.dir,s,args.flagstat_extension))):
+                O.write("%s\tNA\tNA\tNA\tNA\n" % (s))
+                continue
+
             for i,l in enumerate(open("%s/%s%s" % (args.dir,s,args.flagstat_extension))):
                 row = l.rstrip().split()
                 if i==4:
@@ -67,6 +71,7 @@ parser.add_argument('--sample-file',type=str,help='Sample file')
 parser.add_argument('--dir',default=".",type=str,help='Directory')
 parser.add_argument('--depth-cutoff',default=10,type=int,help='Add depth info')
 parser.add_argument('--bam-extension',default=".bqsr.cram",type=str,help='Extension of bam files')
+parser.add_argument('--allow-missing',action="store_true",help='Extension of bam files')
 parser.set_defaults(func=main)
 
 args = parser.parse_args()
