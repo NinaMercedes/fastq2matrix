@@ -127,6 +127,8 @@ parser_sub.set_defaults(func=main_all)
 
 parser_sub = subparsers.add_parser('trim', help='Trim reads using trimmomatic', formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 parser_sub.add_argument('--prefix','-p',help='Sample prefix for all results generated',required=True)
+parser_sub.add_argument('--tmp-dir',default=".",type=str,help='Number of threads')
+parser_sub.add_argument('--storage-dir',default=".",type=str,help='Number of threads')
 parser_sub.set_defaults(func=main_trim)
 
 parser_sub = subparsers.add_parser('map', help='Trim reads using trimmomatic', formatter_class=argparse.ArgumentDefaultsHelpFormatter)
@@ -137,6 +139,8 @@ parser_sub.add_argument('--ref','-r',help='Second read file',required=True)
 parser_sub.add_argument('--threads','-t',default=4,help='Number of threads')
 parser_sub.add_argument('--bqsr-vcf','-q',help='VCF file used for bqsr')
 parser_sub.add_argument('--redo',action="store_true",help='Redo everything')
+parser_sub.add_argument('--tmp-dir',default=".",type=str,help='Number of threads')
+parser_sub.add_argument('--storage-dir',default=".",type=str,help='Number of threads')
 parser_sub.set_defaults(func=main_map)
 
 parser_sub = subparsers.add_parser('gatk', help='Trim reads using trimmomatic', formatter_class=argparse.ArgumentDefaultsHelpFormatter)
@@ -145,7 +149,8 @@ parser_sub.add_argument('--ref','-r',help='Second read file',required=True)
 parser_sub.add_argument('--prefix','-p',help='Sample prefix for all results generated')
 parser_sub.add_argument('--erc',default="GVCF", choices=["GVCF","BP_RESOLUTION"], help='Choose ERC type on GATK')
 parser_sub.add_argument('--threads','-t',default=4,help='Number of threads')
-
+parser_sub.add_argument('--tmp-dir',default=".",type=str,help='Number of threads')
+parser_sub.add_argument('--storage-dir',default=".",type=str,help='Number of threads')
 parser_sub.set_defaults(func=main_gatk)
 
 
