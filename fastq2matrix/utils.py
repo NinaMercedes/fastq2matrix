@@ -11,6 +11,13 @@ import re
 import uuid
 rand_generator = random.SystemRandom()
 
+def find_file_in_dirs(filename,dirs):
+    match = None
+    for d in dirs:
+        if os.path.exists("%s/%s" % (d,filename)):
+            match = "%s/%s" % (d,filename)
+    return match
+
 def chunk_reference(ref,n):
     genome_chunks = []
     for l in cmd_out(f"bedtools makewindows -n {n} -g {ref}.fai"):
