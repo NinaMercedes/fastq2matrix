@@ -4,7 +4,7 @@ import sys
 import os
 import argparse
 import subprocess
-from fastq2matrix import run_cmd, cmd_out, nofile, nofolder, vcf_class, get_contigs_from_fai, get_random_file, filecheck, foldercheck
+from fastq2matrix import run_cmd, cmd_out, nofile, nofolder, vcf_class, get_contigs_from_fai, get_random_file, filecheck, foldercheck, find_file_in_dirs
 import json
 from datetime import date
 
@@ -12,20 +12,22 @@ def main_import(args):
     FAILED_SAMPLES = open("%s.failed_samples.log" % args.prefix, "w")
     params = vars(args)
     params["map_file"]= f"{args.prefix}.map"
-
     with open(params["map_file"],"w") as O:
         # Set up list to hold sample names
         samples = []
         # Loop through sample-file and do (1) append samples to list, (2) write sample to map file and (3) check for VCF index
         for line in open(args.sample_file):
             sample = line.rstrip()
-            vcf_file = f"{args.vcf_dir}/{sample}{args.vcf_extension}"
-            sys.stderr.write(f"Looking for {vcf_file}")
-            if os.path.isfile(vcf_file):
+            sys.stderr.write(f"Looking for {sample}{args.vcf_extension}")
+            vcf_file = find_file_in_dirs(f"{sample}{args.vcf_extension}",args.vcf_dir)
+            if vcf_file:
                 sys.stderr.write("...OK\n")
             else:
                 sys.stderr.write("...Not found...skipping\n")
-                continue
+                if args.ignore_missing:
+                    continue
+                else:
+                    quit("ERROR: file not found")
             # filecheck(vcf_file)
             if args.ignore_missing and nofile(vcf_file):
                 FAILED_SAMPLES.write("%s\tno_file\n" % sample)
@@ -97,7 +99,7 @@ parser_sub = subparsers.add_parser('all', help='Trim reads using trimmomatic', f
 parser_sub.add_argument('--sample-file',help='sample file',required=True)
 parser_sub.add_argument('--prefix',help='Prefix for database name',required=True)
 parser_sub.add_argument('--ref',help='reference file',required=True)
-parser_sub.add_argument('--vcf-dir',default="./vcf/", type=str, help='VCF firectory')
+parser_sub.add_argument('--vcf-dir',action="append", help='VCF firectory',required=True)
 parser_sub.add_argument('--vcf-extension',default=".g.vcf.gz", type=str, help='VCF extension')
 parser_sub.add_argument('--threads',default=4, type=int, help='Number of threads for parallel operations')
 parser_sub.add_argument('--num-genome-chunks',default=20, type=int, help='Number of chunks to divide the genome into')
@@ -111,7 +113,7 @@ parser_sub = subparsers.add_parser('import', help='Trim reads using trimmomatic'
 parser_sub.add_argument('--sample-file',help='sample file',required=True)
 parser_sub.add_argument('--prefix',help='Prefix for database name',required=True)
 parser_sub.add_argument('--ref',help='reference file',required=True)
-parser_sub.add_argument('--vcf-dir',default="./vcf/", type=str, help='VCF firectory')
+parser_sub.add_argument('--vcf-dir',action="append", help='VCF firectory',required=True)
 parser_sub.add_argument('--vcf-extension',default=".g.vcf.gz", type=str, help='VCF extension')
 parser_sub.add_argument('--threads',default=4, type=int, help='Number of threads for parallel operations')
 parser_sub.add_argument('--num-genome-chunks',default=20, type=int, help='Number of chunks to divide the genome into')
