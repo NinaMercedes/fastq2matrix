@@ -54,7 +54,7 @@ def main_map(args):
 def main_gatk(args):
     if not args.prefix:
         args.prefix = args.bam.replace(".bam","")
-    fm.run_cmd("gatk HaplotypeCaller -I %(bam)s -R %(ref)s -O %(tmp_dir)s/%(prefix)s.g.vcf.gz -ERC %(erc)s" % vars(args))
+    fm.run_cmd("gatk HaplotypeCaller -I %(bam)s -R %(ref)s -O %(tmp_dir)s/%(prefix)s.g.vcf.gz -ERC %(erc)s %(hc_options)s" % vars(args))
     fm.run_cmd("gatk ValidateVariants -V %(tmp_dir)s/%(prefix)s.g.vcf.gz -gvcf -R %(ref)s && touch %(tmp_dir)s/%(prefix)s.g.vcf.gz.validated" % vars(args))
 
 def convert_to_cram(bam_file,ref_file,threads):
@@ -117,6 +117,7 @@ parser_sub.add_argument('--ref','-r',help='Second read file',required=True)
 parser_sub.add_argument('--threads','-t',default=4,help='Number of threads')
 parser_sub.add_argument('--bqsr-vcf','-q',help='VCF file used for bqsr')
 parser_sub.add_argument('--erc',default="GVCF", choices=["GVCF","BP_RESOLUTION"], help='Choose ERC type on GATK')
+parser_sub.add_argument('--hc-options',default="",type=str,help='Number of threads')
 parser_sub.add_argument('--redo',action="store_true",help='Redo everything')
 parser_sub.add_argument('--single',action="store_true",help='Redo everything')
 parser_sub.add_argument('--cram',action="store_true",help='Conver to cram')
@@ -148,6 +149,7 @@ parser_sub.add_argument('--bam','-b',help='First read file',required=True)
 parser_sub.add_argument('--ref','-r',help='Second read file',required=True)
 parser_sub.add_argument('--prefix','-p',help='Sample prefix for all results generated')
 parser_sub.add_argument('--erc',default="GVCF", choices=["GVCF","BP_RESOLUTION"], help='Choose ERC type on GATK')
+parser_sub.add_argument('--hc-options',default="",type=str,help='Number of threads')
 parser_sub.add_argument('--threads','-t',default=4,help='Number of threads')
 parser_sub.add_argument('--tmp-dir',default=".",type=str,help='Number of threads')
 parser_sub.add_argument('--storage-dir',default=".",type=str,help='Number of threads')
