@@ -54,8 +54,9 @@ def main_map(args):
 def main_gatk(args):
     if not args.prefix:
         args.prefix = args.bam.replace(".bam","")
-    fm.run_cmd("gatk HaplotypeCaller -I %(bam)s -R %(ref)s -O %(tmp_dir)s/%(prefix)s.g.vcf.gz -ERC %(erc)s %(hc_options)s" % vars(args))
-    fm.run_cmd("gatk ValidateVariants -V %(tmp_dir)s/%(prefix)s.g.vcf.gz -gvcf -R %(ref)s && touch %(tmp_dir)s/%(prefix)s.g.vcf.gz.validated" % vars(args))
+    args.regions = "-L %s" % args.gatk_bed if args.gatk_bed else ""
+    fm.run_cmd("gatk HaplotypeCaller -I %(bam)s -R %(ref)s -O %(tmp_dir)s/%(prefix)s.g.vcf.gz -ERC %(erc)s %(hc_options)s %(regions)s" % vars(args))
+    fm.run_cmd("gatk ValidateVariants -V %(tmp_dir)s/%(prefix)s.g.vcf.gz -gvcf -R %(ref)s %(regions)s && touch %(tmp_dir)s/%(prefix)s.g.vcf.gz.validated" % vars(args))
 
 def convert_to_cram(bam_file,ref_file,threads):
     cram_file = bam_file.replace(".bam",".cram")
@@ -124,6 +125,7 @@ parser_sub.add_argument('--cram',action="store_true",help='Conver to cram')
 parser_sub.add_argument('--bam-qc',action="store_true",help='Calculate flagstats and coverage')
 parser_sub.add_argument('--tmp-dir',default=".",type=str,help='Number of threads')
 parser_sub.add_argument('--storage-dir',default=".",type=str,help='Number of threads')
+parser_sub.add_argument('--gatk-bed',type=str,help='Number of threads')
 parser_sub.set_defaults(func=main_all)
 
 parser_sub = subparsers.add_parser('trim', help='Trim reads using trimmomatic', formatter_class=argparse.ArgumentDefaultsHelpFormatter)
@@ -153,6 +155,7 @@ parser_sub.add_argument('--hc-options',default="",type=str,help='Number of threa
 parser_sub.add_argument('--threads','-t',default=4,help='Number of threads')
 parser_sub.add_argument('--tmp-dir',default=".",type=str,help='Number of threads')
 parser_sub.add_argument('--storage-dir',default=".",type=str,help='Number of threads')
+parser_sub.add_argument('--gatk-bed',type=str,help='Number of threads')
 parser_sub.set_defaults(func=main_gatk)
 
 
