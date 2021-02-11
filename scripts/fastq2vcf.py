@@ -104,7 +104,7 @@ def main_all(args):
             sys.stderr.write("Creating coverage and flagstat files\n")
             bam_qc(args)
 
-    if args.storage_dir!=os.getcwd():
+    if os.path.abspath(args.storage_dir)!=os.getcwd():
         fm.run_cmd("mv %(prefix_path)s* %(storage_dir)s/" % vars(args))
 
 parser = argparse.ArgumentParser(description='fastq2matrix pipeline',formatter_class=argparse.ArgumentDefaultsHelpFormatter)
