@@ -32,9 +32,9 @@ def main_map(args):
         args.reads = "%(tmp_dir)s/%(prefix)s_trimmed.fq" % vars(args)
     elif "trimmed" in vars(args) and not args.single:
         args.reads = "%(tmp_dir)s/%(prefix)s_1P %(tmp_dir)s/%(prefix)s_2P" % vars(args)
-    elif "trimmed" not in vars(args) and args.single:
-        args.reads = "%(read1)s %(read2)s" % vars(args)
     elif "trimmed" not in vars(args) and not args.single:
+        args.reads = "%(read1)s %(read2)s" % vars(args)
+    elif "trimmed" not in vars(args) and args.single:
         args.reads = "%(read1)s" % vars(args)
     if args.redo or args.step<1:
         args.drop_unmapped = "-F 4 " % vars(args) if args.drop_unmapped else ""
