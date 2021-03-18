@@ -17,6 +17,7 @@ def get_step_num(prefix):
 
 
 def main_trim(args):
+    args.prefix_path = args.tmp_dir+"/"+args.prefix
     if args.single:
         fm.run_cmd("trimmomatic SE -phred33 -threads %(threads)s %(read1)s %(tmp_dir)s/%(prefix)s_trimmed.fq LEADING:3 TRAILING:3 SLIDINGWINDOW:4:20 MINLEN:36" % vars(args))
     else:
@@ -54,6 +55,7 @@ def main_map(args):
 
 
 def main_gatk(args):
+    args.prefix_path = args.tmp_dir+"/"+args.prefix
     if not args.prefix:
         args.prefix = args.bam.replace(".bam","")
     args.regions = "-L %s" % args.gatk_bed if args.gatk_bed else ""
