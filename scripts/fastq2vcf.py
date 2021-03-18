@@ -35,7 +35,7 @@ def main_map(args):
     elif "trimmed" not in vars(args) and not args.single:
         args.reads = "%(read1)s" % vars(args)
     if args.redo or args.step<1:
-        args.drop_unmapped = "samtools view -@ %(threads)s -F 4 | " % vars(args) if args.drop_unmapped else ""
+        args.drop_unmapped = "samtools view -@ %(threads)s -F 4 - | " % vars(args) if args.drop_unmapped else ""
         fm.run_cmd("bwa mem -t %(threads)s -R \"@RG\\tID:%(prefix)s\\tSM:%(prefix)s\\tPL:Illumina\" %(ref)s %(reads)s | %(drop_unmapped)s samtools view -@ %(threads)s -b - | samtools fixmate -@ %(threads)s -m - - | samtools sort -@ %(threads)s - | samtools markdup -@ %(threads)s - %(tmp_dir)s/%(prefix)s.mkdup.bam -" % vars(args))
         if "trimmed" in vars(args) and args.single:
             fm.run_cmd("rm %(reads)s" % vars(args))
