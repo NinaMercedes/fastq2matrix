@@ -18,9 +18,9 @@ def get_step_num(prefix):
 
 def main_trim(args):
     if args.single:
-        fm.run_cmd("trimmomatic SE -phred33 %(read1)s %(tmp_dir)s/%(prefix)s_trimmed.fq LEADING:3 TRAILING:3 SLIDINGWINDOW:4:20 MINLEN:36" % vars(args))
+        fm.run_cmd("trimmomatic SE -phred33 -threads %(threads)s %(read1)s %(tmp_dir)s/%(prefix)s_trimmed.fq LEADING:3 TRAILING:3 SLIDINGWINDOW:4:20 MINLEN:36" % vars(args))
     else:
-        fm.run_cmd("trimmomatic PE -phred33 %(read1)s %(read2)s -baseout %(tmp_dir)s/%(prefix)s LEADING:3 TRAILING:3 SLIDINGWINDOW:4:20 MINLEN:36" % vars(args))
+        fm.run_cmd("trimmomatic PE -phred33 -threads %(threads)s %(read1)s %(read2)s -baseout %(tmp_dir)s/%(prefix)s LEADING:3 TRAILING:3 SLIDINGWINDOW:4:20 MINLEN:36" % vars(args))
 
 
 def main_map(args):
