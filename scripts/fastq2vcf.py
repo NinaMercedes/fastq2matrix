@@ -35,7 +35,8 @@ def main_map(args):
     elif "trimmed" not in vars(args) and not args.single:
         args.reads = "%(read1)s" % vars(args)
     if args.redo or args.step<1:
-        fm.run_cmd("bwa mem -t %(threads)s -R \"@RG\\tID:%(prefix)s\\tSM:%(prefix)s\\tPL:Illumina\" %(ref)s %(reads)s | samtools view -@ %(threads)s -b - | samtools fixmate -@ %(threads)s -m - - | samtools sort -@ %(threads)s - | samtools markdup -@ %(threads)s - %(tmp_dir)s/%(prefix)s.mkdup.bam -" % vars(args))
+        args.drop_unmapped = "samtools view -@ %(threads)s -F 4 | " % vars(args) if args.drop_unmapped else ""
+        fm.run_cmd("bwa mem -t %(threads)s -R \"@RG\\tID:%(prefix)s\\tSM:%(prefix)s\\tPL:Illumina\" %(ref)s %(reads)s | %(drop_unmapped)s samtools view -@ %(threads)s -b - | samtools fixmate -@ %(threads)s -m - - | samtools sort -@ %(threads)s - | samtools markdup -@ %(threads)s - %(tmp_dir)s/%(prefix)s.mkdup.bam -" % vars(args))
         if "trimmed" in vars(args) and args.single:
             fm.run_cmd("rm %(reads)s" % vars(args))
         if "trimmed" in vars(args) and not args.single:
@@ -126,6 +127,7 @@ parser_sub.add_argument('--bam-qc',action="store_true",help='Calculate flagstats
 parser_sub.add_argument('--tmp-dir',default=".",type=str,help='Number of threads')
 parser_sub.add_argument('--storage-dir',default=".",type=str,help='Number of threads')
 parser_sub.add_argument('--gatk-bed',type=str,help='Number of threads')
+parser_sub.add_argument('--drop-unmapped',action="store_true",help='Calculate flagstats and coverage')
 parser_sub.set_defaults(func=main_all)
 
 parser_sub = subparsers.add_parser('trim', help='Trim reads using trimmomatic', formatter_class=argparse.ArgumentDefaultsHelpFormatter)
@@ -144,6 +146,7 @@ parser_sub.add_argument('--bqsr-vcf','-q',help='VCF file used for bqsr')
 parser_sub.add_argument('--redo',action="store_true",help='Redo everything')
 parser_sub.add_argument('--tmp-dir',default=".",type=str,help='Number of threads')
 parser_sub.add_argument('--storage-dir',default=".",type=str,help='Number of threads')
+parser_sub.add_argument('--drop-unmapped',action="store_true",help='Calculate flagstats and coverage')
 parser_sub.set_defaults(func=main_map)
 
 parser_sub = subparsers.add_parser('gatk', help='Trim reads using trimmomatic', formatter_class=argparse.ArgumentDefaultsHelpFormatter)

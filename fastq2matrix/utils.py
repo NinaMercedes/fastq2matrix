@@ -172,7 +172,7 @@ def run_cmd(cmd,verbose=1,target=None):
     """
     Wrapper to run a command using subprocess with 3 levels of verbosity and automatic exiting if command failed
     """
-    if target and     (target): return True
+    if target and  os.path.isfile(target): return True
     cmd = "set -u pipefail; " + cmd
     if verbose==2:
         sys.stderr.write("\nRunning command:\n%s\n" % cmd)
