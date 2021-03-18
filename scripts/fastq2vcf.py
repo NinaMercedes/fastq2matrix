@@ -24,6 +24,7 @@ def main_trim(args):
 
 
 def main_map(args):
+    args.prefix_path = args.tmp_dir+"/"+args.prefix
     args.step = get_step_num(args.prefix_path)
 
     if "trimmed" in vars(args) and args.single:
