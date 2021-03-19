@@ -125,11 +125,6 @@ def foldercheck(filename):
     else:
         return filename
 
-def debug(s):
-    sys.stderr.write("#"*40+"\n")
-    sys.stderr.write("%s\n" % s)
-    sys.stderr.write("#"*40+"\n")
-
 def nofile(filename):
     """
     Return True if file does not exist
@@ -166,6 +161,14 @@ def bwa_index(ref):
     """
     if nofile("%s.bwt"%ref):
         cmd = "bwa index %s" % ref
+        run_cmd(cmd)
+
+def bwa2_index(ref):
+    """
+    Create BWA index for a reference
+    """
+    if nofile("%s.bwt.2bit.64"%ref):
+        cmd = "bwa-mem2 index %s" % ref
         run_cmd(cmd)
 
 def run_cmd(cmd,verbose=1,target=None):

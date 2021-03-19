@@ -25,6 +25,10 @@ def main_trim(args):
 
 
 def main_map(args):
+    if args.mapper=="bwa":
+        fm.bwa_index(args.ref)
+    elif args.mapper=="bwa-mem2":
+        fm.bwa2_index(args.ref)
     args.prefix_path = args.tmp_dir+"/"+args.prefix
     args.step = get_step_num(args.prefix_path)
 
@@ -38,7 +42,7 @@ def main_map(args):
         args.reads = "%(read1)s" % vars(args)
     if args.redo or args.step<1:
         args.drop_unmapped = "-F 4 " % vars(args) if args.drop_unmapped else ""
-        fm.run_cmd("bwa mem -t %(threads)s -R \"@RG\\tID:%(prefix)s\\tSM:%(prefix)s\\tPL:Illumina\" %(ref)s %(reads)s | samtools view -@ %(threads)s %(drop_unmapped)s -b - | samtools fixmate -@ %(threads)s -m - - | samtools sort -@ %(threads)s - | samtools markdup -@ %(threads)s - %(tmp_dir)s/%(prefix)s.mkdup.bam -" % vars(args))
+        fm.run_cmd("%(mapper)s mem -t %(threads)s -R \"@RG\\tID:%(prefix)s\\tSM:%(prefix)s\\tPL:Illumina\" %(ref)s %(reads)s | samtools view -@ %(threads)s %(drop_unmapped)s -b - | samtools fixmate -@ %(threads)s -m - - | samtools sort -@ %(threads)s - | samtools markdup -@ %(threads)s - %(tmp_dir)s/%(prefix)s.mkdup.bam -" % vars(args))
         if "trimmed" in vars(args) and args.single:
             fm.run_cmd("rm %(reads)s" % vars(args))
         if "trimmed" in vars(args) and not args.single:
@@ -75,7 +79,6 @@ def bam_qc(args):
 
 def main_all(args):
     fm.create_seq_dict(args.ref)
-    fm.bwa_index(args.ref)
     fm.faidx(args.ref)
 
     args.prefix_path = args.tmp_dir+"/"+args.prefix
@@ -120,6 +123,7 @@ parser_sub.add_argument('--read2','-2',help='Second read file')
 parser_sub.add_argument('--prefix','-p',help='Sample prefix for all results generated',required=True)
 parser_sub.add_argument('--ref','-r',help='Second read file',required=True)
 parser_sub.add_argument('--threads','-t',default=4,help='Number of threads')
+parser_sub.add_argument('--mapper','-m',default="bwa",choices=["bwa","bwa-mem2"],type=str,help='Mapping program to use')
 parser_sub.add_argument('--bqsr-vcf','-q',help='VCF file used for bqsr')
 parser_sub.add_argument('--erc',default="GVCF", choices=["GVCF","BP_RESOLUTION"], help='Choose ERC type on GATK')
 parser_sub.add_argument('--hc-options',default="",type=str,help='Number of threads')
@@ -147,6 +151,7 @@ parser_sub.add_argument('--prefix','-p',help='Sample prefix for all results gene
 parser_sub.add_argument('--ref','-r',help='Second read file',required=True)
 parser_sub.add_argument('--threads','-t',default=4,help='Number of threads')
 parser_sub.add_argument('--bqsr-vcf','-q',help='VCF file used for bqsr')
+parser_sub.add_argument('--mapper','-m',default="bwa",choices=["bwa","bwa-mem2"],type=str,help='Mapping program to use')
 parser_sub.add_argument('--redo',action="store_true",help='Redo everything')
 parser_sub.add_argument('--tmp-dir',default=".",type=str,help='Number of threads')
 parser_sub.add_argument('--storage-dir',default=".",type=str,help='Number of threads')
