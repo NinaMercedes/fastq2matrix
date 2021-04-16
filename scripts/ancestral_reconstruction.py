@@ -19,7 +19,7 @@ def main(args):
         fm.run_cmd("vcf2fasta.py --vcf %(vcf)s --snps --ref %(ref)s --snps-no-filt" % vars(args))
         args.fasta = "%s.snps.fa" % vcf_class.prefix
     if fm.nofile("%s.asr.state" % args.fasta):
-        fm.run_cmd("iqtree -m %(model)s -te %(tree)s -s %(fasta)s -nt AUTO -asr -pre %(fasta)s.asr" % vars(args))
+        fm.run_cmd("iqtree -m %(model)s -te %(tree)s -s %(fasta)s -asr -pre %(fasta)s.asr" % vars(args))
 
     tree = ete3.Tree("%s.asr.treefile" % args.fasta,format=1)
     node_names = set([tree.name] + [n.name.split("/")[0] for n in tree.get_descendants()])
@@ -76,7 +76,7 @@ parser.add_argument('--out',help='Output file',required=True)
 group = parser.add_mutually_exclusive_group()
 group.add_argument('--fasta',help='Fasta file contining exactly the same number of SNPs as in the VCF. If you want to be safe that you have exactly the same just use the --ref command instead to generate a SNPs fasta')
 group.add_argument('--ref',help='Reference file. Use this if you want to create a SNPs fasta from the VCF')
-parser.add_argument('--model',default="GTR+G",help='Model used by iqtree')
+parser.add_argument('--model',default="GTR+G+ASC",help='Model used by iqtree')
 parser.set_defaults(func=main)
 
 args = parser.parse_args()
