@@ -1,5 +1,5 @@
 import os
-from .utils import run_cmd, nofile, get_random_file, add_arguments_to_self, index_vcf
+from .utils import cmd_out, run_cmd, nofile, get_random_file, add_arguments_to_self, index_vcf
 from collections import defaultdict
 import uuid
 
@@ -27,6 +27,13 @@ class vcf_class:
         for l in open(self.temp_file):
             self.samples.append(l.rstrip())
         os.remove(self.temp_file)
+
+    def get_positions(self):
+        positions = []
+        for l in cmd_out("bcftools query -f '%CHROM\t%POS\n' %(filename)s" % vars(args)):
+            row = l.strip().split()
+            positions.append(tuple(row))
+        return positions
 
     def vcf_to_fasta(self,ref_file,threads=4,chunk_size = 50000, nofilt=True):
         self.ref_file = ref_file
