@@ -30,7 +30,7 @@ class vcf_class:
 
     def get_positions(self):
         positions = []
-        for l in cmd_out("bcftools query -f '%CHROM\t%POS\n' %(filename)s" % vars(args)):
+        for l in cmd_out("bcftools query -f '%CHROM\t%POS\n' %(filename)s" % vars(self)):
             row = l.strip().split()
             positions.append(tuple(row))
         return positions
