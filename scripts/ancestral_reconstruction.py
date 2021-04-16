@@ -9,7 +9,7 @@ import fastq2matrix as fm
 
 def main(args):
 
-    vcf_class = fm.vcf(args.vcf)
+    vcf_class = fm.vcf_class(args.vcf)
     vcf_positions = vcf_class.get_positions()
 
     if not args.fasta:
