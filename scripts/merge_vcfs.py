@@ -50,7 +50,10 @@ def main_import(args):
     if nofile("%s.fai" % args.ref.replace(".fasta","").replace(".fa","")):
         run_cmd("samtools faidx %(ref)s" % params)
 
-    window_cmd = "bedtools makewindows -n %(num_genome_chunks)s -g %(ref)s.fai | awk '{print $1\":\"$2+1\"-\"$3\" \"$1\"_\"$2+1\"_\"$3}'" % params
+    if args.bed:
+        window_cmd = "cat %(bed)s | awk '{print $1\":\"$2\"-\"$3\" \"$1\"_\"$2\"_\"$3}'" % vars(args)
+    else:
+        window_cmd = "bedtools makewindows -n %(num_genome_chunks)s -g %(ref)s.fai | awk '{print $1\":\"$2+1\"-\"$3\" \"$1\"_\"$2+1\"_\"$3}'" % params
     if nofile("%(prefix)s.dbconf.json" % params):
         import_cmd = "gatk GenomicsDBImport --genomicsdb-workspace-path %(prefix)s_{2}_genomics_db -L {1} --sample-name-map %(map_file)s --reader-threads %(threads)s --batch-size 500" % params
         run_cmd(f"{window_cmd} | parallel --bar -j {args.threads} --col-sep \" \" {import_cmd}", verbose=2)
@@ -70,7 +73,10 @@ def main_genotype(args):
     conf = json.load(open(filecheck(f"{args.prefix}.dbconf.json")))
     params = vars(args)
     params["num_genome_chunks"] = conf["num_genome_chunks"]
-    window_cmd = "bedtools makewindows -n %(num_genome_chunks)s -g %(ref)s.fai | awk '{print $1\":\"$2+1\"-\"$3\" \"$1\"_\"$2+1\"_\"$3}'" % params
+    if args.bed:
+        window_cmd = "cat %(bed)s | awk '{print $1\":\"$2\"-\"$3\" \"$1\"_\"$2\"_\"$3}'" % vars(args)
+    else:
+        window_cmd = "bedtools makewindows -n %(num_genome_chunks)s -g %(ref)s.fai | awk '{print $1\":\"$2+1\"-\"$3\" \"$1\"_\"$2+1\"_\"$3}'" % params
     params["window_cmd"] = window_cmd
     # Check folders exist
     for l in cmd_out(window_cmd):
@@ -105,6 +111,7 @@ parser_sub.add_argument('--threads',default=4, type=int, help='Number of threads
 parser_sub.add_argument('--num-genome-chunks',default=20, type=int, help='Number of chunks to divide the genome into')
 parser_sub.add_argument('--ignore-missing', action="store_true", help='If this option is set, missing samples are ignored')
 parser_sub.add_argument('--no-validate',action="store_true")
+parser_sub.add_argument('--bed',type=str, help='Bed file to limit analysis')
 parser_sub.add_argument('--subfix-vcf', default=date.today().strftime('%Y_%m_%d'), type=str, help='Subfix for genotyped vcf')
 parser_sub.set_defaults(func=main_all)
 
