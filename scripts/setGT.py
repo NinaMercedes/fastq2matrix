@@ -26,11 +26,12 @@ def main(args):
                     row[i]="".join(tmp)
 
         uniq_mixed_genotypes = set([x for x in re.findall("[0-9][/|][0-9]",line) if x[0]!=x[2]])
+        idx = row[8].split(":").index("AD")
         if len(uniq_mixed_genotypes)>=1:
             for i in range(9,len(row)):
                 if row[i][:3] not in uniq_mixed_genotypes: continue
                 fmt = row[i].split(":")
-                ad = [int(x) for x in fmt[1].split(",")]
+                ad = [int(x) for x in fmt[idx].split(",")]
                 total_ad = sum(ad)
                 if total_ad==0:continue
                 adf = [ad[j]/total_ad for j in range(len(ad))]
