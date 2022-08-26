@@ -170,6 +170,8 @@ parser_sub.add_argument('--tmp-dir',default=".",type=str,help='Number of threads
 parser_sub.add_argument('--storage-dir',default=".",type=str,help='Number of threads')
 parser_sub.add_argument('--drop-unmapped',action="store_true",help='Calculate flagstats and coverage')
 parser_sub.add_argument('--single',action="store_true",help='Single ended reads')
+parser_sub.add_argument('--cram',action="store_true",help='Conver to cram')
+parser_sub.add_argument('--bam-qc',action="store_true",help='Calculate flagstats and coverage')
 parser_sub.set_defaults(func=main_map)
 
 parser_sub = subparsers.add_parser('gatk', help='Trim reads using trimmomatic', formatter_class=argparse.ArgumentDefaultsHelpFormatter)
