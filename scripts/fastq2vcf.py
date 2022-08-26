@@ -48,7 +48,7 @@ def main_map(args):
         if "trimmed" in vars(args) and not args.single:
             fm.run_cmd("rm %(tmp_dir)s/%(prefix)s_1P %(tmp_dir)s/%(prefix)s_2P %(tmp_dir)s/%(prefix)s_1U %(tmp_dir)s/%(prefix)s_2U" % vars(args))
         fm.run_cmd("samtools index -@ %(threads)s %(tmp_dir)s/%(prefix)s.mkdup.bam" % vars(args))
-        args.bam = "%(tmp_dir)s/%(prefix)s.mkdup.bam" % vars(args)"
+        args.bam = "%(tmp_dir)s/%(prefix)s.mkdup.bam" % vars(args)
     
     if args.bqsr_vcf and (args.redo or args.step<2):
         for vcf in args.bqsr_vcf.split(","):
