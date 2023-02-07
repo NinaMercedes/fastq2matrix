@@ -43,7 +43,7 @@ def main(args):
         run_cmd("mv %(prefix)s.vqslod.filt.snps.vcf.gz %(prefix)s.miss%(miss)s.vqslod.filt.snps.vcf.gz" % params)
     else:
         run_cmd("plink --vcf %(prefix)s.vqslod.filt.snps.vcf.gz --mind %(miss)s --recode vcf --allow-extra-chr --const-fid --out %(prefix)s_plink" % params)
-        run_cmd("grep -P \"^#CHROM\" %(prefix)s_plink.vcf | awk '{ $1=\"\"; $2=\"\";$3=\"\"; $4=\"\";$5=\"\"; $6=\"\";$7=\"\"; $8=\"\";$9=\"\"; print}' | sed 's/ /\\n/g' | tail -n+10 > %(prefix)s_new" % params)
+        run_cmd("grep -P \"^#CHROM\" %(prefix)s_plink.vcf | awk '{ $1=\"\"; $2=\"\";$3=\"\"; $4=\"\";$5=\"\"; $6=\"\";$7=\"\"; $8=\"\";$9=\"\"; print}' | sed 's/ /\\n/g' | tail -n+10 | sed 's/^0_//'  > %(prefix)s_new" % params)
         run_cmd("bcftools view -S %(prefix)s_new --threads 20 -O z -o  %(prefix)s.miss%(miss)s.vqslod.filt.snps.vcf.gz %(prefix)s.vqslod.filt.snps.vcf.gz" % params)
     ## Add set GT
     run_cmd("bcftools view %(prefix)s.miss%(miss)s.vqslod.filt.snps.vcf.gz | setGT.py --fraction %(mix)s | bcftools view -O z -c 1 -o %(prefix)s.GT.miss%(miss)s.vqslod.filt.snps.vcf.gz" % params)
