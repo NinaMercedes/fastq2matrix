@@ -1,3 +1,4 @@
+#! /usr/bin/env python
 from fastq2matrix import run_cmd, nofile, nofolder, vcf_class, get_random_file
 import argparse
 
