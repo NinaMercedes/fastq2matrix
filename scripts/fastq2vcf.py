@@ -75,6 +75,7 @@ def convert_to_cram(bam_file,ref_file,threads):
 
 def bam_qc(args):
     fm.run_cmd("samtools flagstat -@ %(threads)s %(bam)s > %(bam)s.flagstat.txt" % vars(args))
+    fm.run_cmd("samtools stats -@ %(threads)s %(bam)s > %(bam)s.stats.txt" % vars(args))
     fm.run_cmd("bedtools genomecov -ibam %(bam)s > %(bam)s.genomecov.txt" % vars(args))
 
 def main_all(args):
