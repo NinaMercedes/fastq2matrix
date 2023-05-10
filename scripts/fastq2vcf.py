@@ -48,6 +48,8 @@ def main_map(args):
         if "trimmed" in vars(args) and not args.single:
             fm.run_cmd("rm %(tmp_dir)s/%(prefix)s_1P %(tmp_dir)s/%(prefix)s_2P %(tmp_dir)s/%(prefix)s_1U %(tmp_dir)s/%(prefix)s_2U" % vars(args))
         fm.run_cmd("samtools index -@ %(threads)s %(tmp_dir)s/%(prefix)s.mkdup.bam" % vars(args))
+        args.bam = "%(tmp_dir)s/%(prefix)s.mkdup.bam" % vars(args)
+    
     if args.bqsr_vcf and (args.redo or args.step<2):
         for vcf in args.bqsr_vcf.split(","):
             fm.tabix_vcf(vcf)
@@ -56,7 +58,18 @@ def main_map(args):
         fm.run_cmd("gatk ApplyBQSR -R %(ref)s -I %(tmp_dir)s/%(prefix)s.mkdup.bam --bqsr-recal-file %(tmp_dir)s/%(prefix)s.recal_data.table -O %(tmp_dir)s/%(prefix)s.bqsr.bam" % vars(args))
         fm.run_cmd("samtools index -@ %(threads)s %(tmp_dir)s/%(prefix)s.bqsr.bam" % vars(args))
         fm.run_cmd("rm %(tmp_dir)s/%(prefix)s.mkdup.bam*" % vars(args))
+        args.bam = "%(tmp_dir)s/%(prefix)s.bqsr.bam" % vars(args)
 
+    if args.cram:
+        cram_file = args.bam.replace(".bam",".cram")
+        if args.redo or not os.path.isfile(cram_file):
+            sys.stderr.write("Converting to cram\n")
+            convert_to_cram(args.bam,args.ref,args.threads)
+        args.bam = cram_file
+    if args.bam_qc:
+        if args.redo or not os.path.isfile(args.bam+".flagstat.txt") or not os.path.isfile(args.bam+".genomecov.txt"):
+            sys.stderr.write("Creating coverage and flagstat files\n")
+            bam_qc(args)
 
 def main_gatk(args):
     args.prefix_path = args.tmp_dir+"/"+args.prefix
@@ -97,20 +110,20 @@ def main_all(args):
         args.trimmed = True
     if args.redo or args.step<2:
         main_map(args)
-    if args.redo or args.step<3:
+    if args.redo or args.step<3 and not args.no_variant_calling:
         sys.stderr.write("Using %(bam)s as the bam file" % vars(args))
         main_gatk(args)
 
-    if args.cram:
-        cram_file = args.bam.replace(".bam",".cram")
-        if args.redo or not os.path.isfile(cram_file):
-            sys.stderr.write("Converting to cram\n")
-            convert_to_cram(args.bam,args.ref,args.threads)
-        args.bam = cram_file
-    if args.bam_qc:
-        if args.redo or not os.path.isfile(args.bam+".flagstat.txt") or not os.path.isfile(args.bam+".genomecov.txt"):
-            sys.stderr.write("Creating coverage and flagstat files\n")
-            bam_qc(args)
+    # if args.cram:
+    #     cram_file = args.bam.replace(".bam",".cram")
+    #     if args.redo or not os.path.isfile(cram_file):
+    #         sys.stderr.write("Converting to cram\n")
+    #         convert_to_cram(args.bam,args.ref,args.threads)
+    #     args.bam = cram_file
+    # if args.bam_qc:
+    #     if args.redo or not os.path.isfile(args.bam+".flagstat.txt") or not os.path.isfile(args.bam+".genomecov.txt"):
+    #         sys.stderr.write("Creating coverage and flagstat files\n")
+    #         bam_qc(args)
 
     if os.path.abspath(args.storage_dir)!=os.getcwd():
         fm.run_cmd("mv %(prefix_path)s* %(storage_dir)s/" % vars(args))
@@ -136,6 +149,7 @@ parser_sub.add_argument('--tmp-dir',default=".",type=str,help='Number of threads
 parser_sub.add_argument('--storage-dir',default=".",type=str,help='Number of threads')
 parser_sub.add_argument('--gatk-bed',type=str,help='Number of threads')
 parser_sub.add_argument('--drop-unmapped',action="store_true",help='Calculate flagstats and coverage')
+parser_sub.add_argument('--no-variant-calling',action="store_true",help="Don't perform variant calling")
 parser_sub.set_defaults(func=main_all)
 
 parser_sub = subparsers.add_parser('trim', help='Trim reads using trimmomatic', formatter_class=argparse.ArgumentDefaultsHelpFormatter)
@@ -158,6 +172,8 @@ parser_sub.add_argument('--tmp-dir',default=".",type=str,help='Number of threads
 parser_sub.add_argument('--storage-dir',default=".",type=str,help='Number of threads')
 parser_sub.add_argument('--drop-unmapped',action="store_true",help='Calculate flagstats and coverage')
 parser_sub.add_argument('--single',action="store_true",help='Single ended reads')
+parser_sub.add_argument('--cram',action="store_true",help='Conver to cram')
+parser_sub.add_argument('--bam-qc',action="store_true",help='Calculate flagstats and coverage')
 parser_sub.set_defaults(func=main_map)
 
 parser_sub = subparsers.add_parser('gatk', help='Trim reads using trimmomatic', formatter_class=argparse.ArgumentDefaultsHelpFormatter)
