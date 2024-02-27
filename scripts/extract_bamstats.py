@@ -28,6 +28,8 @@ def main(args):
         samples = [x.replace(args.bam_extension,"") for x in os.listdir("%s/" % args.dir) if x[- len(args.bam_extension):]==args.bam_extension]
     with open(args.out,"w") as O:
         for s in tqdm(samples):
+            if args.debug:
+                print(s)
             res = []
             if args.allow_missing and (not os.path.isfile("%s/%s%s" % (args.dir,s,args.coverage_extension)) or not os.path.isfile("%s/%s%s" % (args.dir,s,args.flagstat_extension))):
                 O.write("%s\tNA\tNA\tNA\tNA\n" % (s))
@@ -73,6 +75,7 @@ parser.add_argument('--dir',default=".",type=str,help='Directory')
 parser.add_argument('--depth-cutoff',default=10,type=int,help='Add depth info')
 parser.add_argument('--bam-extension',default=".bqsr.cram",type=str,help='Extension of bam files')
 parser.add_argument('--allow-missing',action="store_true",help='Extension of bam files')
+parser.add_argument('--debug',action="store_true",help='Debug')
 parser.set_defaults(func=main)
 
 args = parser.parse_args()
