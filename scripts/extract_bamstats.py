@@ -37,10 +37,12 @@ def main(args):
 
             for i,l in enumerate(open("%s/%s%s" % (args.dir,s,args.flagstat_extension))):
                 row = l.rstrip().split()
-                if i==4:
+                if i==4 and 'mapped' in l:
                     res.append(str(row[0]))
                     res.append(str(row[4][1:-1]))
-
+                elif i==6 and 'mapped' in l:
+                    res.append(str(row[0]))
+                    res.append(str(row[4][1:-1]))
 
             cutoff=10
             cumfrac = 0.0
