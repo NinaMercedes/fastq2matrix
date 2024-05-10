@@ -8,7 +8,7 @@ The name comes from the old days when we used to rely on a text based variant ma
 ```
 conda install python=3.7 bwa samtools bcftools parallel datamash gatk4=4.1.4.1 delly tqdm trimmomatic minimap2 biopython bedtools r-ggplot2 iqtree
 
-git clone https://github.com/pathogenseq/fastq2matrix.git
+git clone https://github.com/LSHTMPathogenSeqLab/fastq2matrix.git
 python setup.py install
 ```
 
