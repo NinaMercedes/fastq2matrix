@@ -15,6 +15,7 @@ parser.add_argument('--r1', metavar='r1_pattern', type=str, help='Pattern to mat
 parser.add_argument('--r2', metavar='r2_pattern', type=str, help='Pattern to match R2 files',required=True)
 parser.add_argument('--threads-per-job', metavar='threads_per_job', default=10,type=int, help='Number of threads per job')
 parser.add_argument('--jobs', metavar='jobs', type=int, default=4,help='Number of jobs to run in parallel')
+parser.add_argument('--outdir', metavar='outdir', type=str, help='Output directory',required=True)
 
 args = parser.parse_args()
 
@@ -96,6 +97,10 @@ for s in samples:
     commands.append(f"fastq2vcf.py all --r1 {s.r1[0]} --r2 {s.r2[0]} --prefix {s.prefix} --bam-qc --cram --threads {args.threads_per_job}")
 
 print(commands)
+if not os.path.exists(args.outdir):
+    os.makedirs(args.outdir)
+os.chdir(args.outdir)
+
 # parallel = Parallel(n_jobs=args.jobs, return_as='generator')
 # [r for r in tqdm(parallel(delayed(fm.run_cmd)(cmd) for cmd in commands),total=len(commands),desc="Running jobs")]
     
