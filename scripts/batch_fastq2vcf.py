@@ -93,7 +93,7 @@ samples = find_fastq_files(args.dir,args.r1,args.r2)
 commands = []
 for s in samples:
     
-    commands.append(f"fastq2vcf.py all --r1 {s.r1} --r2 {s.r2} --prefix {s.prefix} --bam-qc --cram --threads {args.threads_per_job}")
+    commands.append(f"fastq2vcf.py all --r1 {s.r1[0]} --r2 {s.r2[0]} --prefix {s.prefix} --bam-qc --cram --threads {args.threads_per_job}")
 
 print(commands)
 # parallel = Parallel(n_jobs=args.jobs, return_as='generator')
