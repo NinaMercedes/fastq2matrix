@@ -13,8 +13,8 @@ parser = argparse.ArgumentParser(description='Find fastq files in a directory an
 parser.add_argument('--dir',nargs="+", type=str, help='Directory to search for fastq files',required=True)
 parser.add_argument('--r1', metavar='r1_pattern', type=str, help='Pattern to match R1 files',required=True)
 parser.add_argument('--r2', metavar='r2_pattern', type=str, help='Pattern to match R2 files',required=True)
-parser.add_argument('--threads_per_job', metavar='threads_per_job', type=int, help='Number of threads per job',required=True)
-parser.add_argument('--jobs', metavar='jobs', type=int, help='Number of jobs to run in parallel',required=True)
+parser.add_argument('--threads-per-job', metavar='threads_per_job', default=10,type=int, help='Number of threads per job')
+parser.add_argument('--jobs', metavar='jobs', type=int, default=4,help='Number of jobs to run in parallel')
 
 args = parser.parse_args()
 
