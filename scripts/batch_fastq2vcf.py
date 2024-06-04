@@ -13,9 +13,10 @@ parser = argparse.ArgumentParser(description='Find fastq files in a directory an
 parser.add_argument('--dir',nargs="+", type=str, help='Directory to search for fastq files',required=True)
 parser.add_argument('--r1', metavar='r1_pattern', type=str, help='Pattern to match R1 files',required=True)
 parser.add_argument('--r2', metavar='r2_pattern', type=str, help='Pattern to match R2 files',required=True)
+parser.add_argument('--ref', metavar='ref', type=str, help='Reference genome',required=True)
+parser.add_argument('--outdir', metavar='outdir', type=str, help='Output directory',required=True)
 parser.add_argument('--threads-per-job', metavar='threads_per_job', default=10,type=int, help='Number of threads per job')
 parser.add_argument('--jobs', metavar='jobs', type=int, default=4,help='Number of jobs to run in parallel')
-parser.add_argument('--outdir', metavar='outdir', type=str, help='Output directory',required=True)
 
 args = parser.parse_args()
 
@@ -94,7 +95,7 @@ samples = find_fastq_files(args.dir,args.r1,args.r2)
 commands = []
 for s in samples:
     
-    commands.append(f"fastq2vcf.py all --r1 {s.r1[0]} --r2 {s.r2[0]} --prefix {s.prefix} --bam-qc --cram --threads {args.threads_per_job}")
+    commands.append(f"fastq2vcf.py all --ref {args.ref} -1 {s.r1[0]} -2 {s.r2[0]} --prefix {s.prefix} --bam-qc --cram --threads {args.threads_per_job}")
 
 print(commands)
 if not os.path.exists(args.outdir):
