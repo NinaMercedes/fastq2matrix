@@ -102,7 +102,7 @@ if not os.path.exists(args.outdir):
     os.makedirs(args.outdir)
 os.chdir(args.outdir)
 
-# parallel = Parallel(n_jobs=args.jobs, return_as='generator')
-# [r for r in tqdm(parallel(delayed(fm.run_cmd)(cmd) for cmd in commands),total=len(commands),desc="Running jobs")]
+parallel = Parallel(n_jobs=args.jobs, return_as='generator')
+[r for r in tqdm(parallel(delayed(fm.run_cmd)(cmd) for cmd in commands),total=len(commands),desc="Running jobs")]
     
 
