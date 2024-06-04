@@ -7,7 +7,7 @@ import argparse
 import subprocess as sp
 from joblib import Parallel, delayed
 from tqdm import tqdm
-import fastq2vcf as fm
+import fastq2matrix as fm
 
 parser = argparse.ArgumentParser(description='Find fastq files in a directory and return a list of tuples with the sample name and the path to the fastq files from both pairs.')
 parser.add_argument('--dir',nargs="+", type=str, help='Directory to search for fastq files',required=True)
