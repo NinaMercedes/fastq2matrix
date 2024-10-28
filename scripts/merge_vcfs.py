@@ -125,6 +125,7 @@ parser_sub.add_argument('--vcf-extension',default=".g.vcf.gz", type=str, help='V
 parser_sub.add_argument('--threads',default=4, type=int, help='Number of threads for parallel operations')
 parser_sub.add_argument('--num-genome-chunks',default=20, type=int, help='Number of chunks to divide the genome into')
 parser_sub.add_argument('--ignore-missing', action="store_true", help='If this option is set, missing samples are ignored')
+parser_sub.add_argument('--bed',type=str, help='Bed file to limit analysis')
 parser_sub.add_argument('--redo',type=str,choices=["dbimport","genotype","filtering","fasta","matrix","pca"])
 parser_sub.add_argument('--no-validate',action="store_true",)
 parser_sub.set_defaults(func=main_import)
@@ -133,6 +134,7 @@ parser_sub = subparsers.add_parser('genotype', help='Trim reads using trimmomati
 parser_sub.add_argument('--prefix',help='Prefix for database name',required=True)
 parser_sub.add_argument('--subfix-vcf', default=date.today().strftime('%Y_%m_%d'), type=str, help='Subfix for genotyped vcf')
 parser_sub.add_argument('--ref',help='reference file',required=True)
+parser_sub.add_argument('--bed',type=str, help='Bed file to limit analysis')
 parser_sub.add_argument('--threads',default=4, type=int, help='Number of threads for parallel operations')
 parser_sub.set_defaults(func=main_genotype)
 
